@@ -1,7 +1,7 @@
-BINARY      := ncsf-sentinel
+BINARY      := sentinel
 BIN_DIR     := bin
 VERSION     ?= $(shell git describe --tags --always --dirty 2>/dev/null || echo 0.1.0)
-LDFLAGS     := -s -w -X github.com/nebulacsf/ncsf-sentinel/internal/version.Version=$(VERSION)
+LDFLAGS     := -s -w -X github.com/nebulacsf/sentinel/internal/version.Version=$(VERSION)
 GO          ?= go
 
 .PHONY: all build run test race vet fmt install clean

@@ -1,4 +1,4 @@
-// Package config loads and saves the NCSF Sentinel server list.
+// Package config loads and saves the Sentinel server list.
 //
 // The on-disk format is deliberately simple and human editable:
 //
@@ -27,7 +27,7 @@ import (
 
 const (
 	// DirName is the directory under the user's home used for all state.
-	DirName = ".ncsf-sentinel"
+	DirName = ".sentinel"
 	// FileName is the default server list file.
 	FileName = "servers.conf"
 )
@@ -51,7 +51,7 @@ type Config struct {
 	Servers []Server
 }
 
-// DefaultPath returns ~/.ncsf-sentinel/servers.conf.
+// DefaultPath returns ~/.sentinel/servers.conf.
 func DefaultPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -275,7 +275,7 @@ func parseOptions(raw string) (map[string]string, error) {
 // Format renders the canonical on-disk representation.
 func Format(servers []Server) string {
 	var b strings.Builder
-	b.WriteString("# NCSF Sentinel - remote servers\n")
+	b.WriteString("# Sentinel - remote servers\n")
 	b.WriteString("# name|type|host|user|port|identity|options\n")
 	for _, s := range servers {
 		if err := s.Normalize(); err != nil {

@@ -5,7 +5,7 @@ import (
 	"math"
 	"strings"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/sshx"
 )
 
 func (m Model) renderTable() string {
@@ -57,7 +57,7 @@ func (m Model) emptyState(th theme, inner int) []string {
 	lines = append(lines,
 		"",
 		"  "+th.muted.Render("Add one with:"),
-		"  "+th.accent.Render(truncate("ncsf-sentinel add --name web-1 --host 203.0.113.10 --user root --key ~/.ssh/id_ed25519", inner)),
+		"  "+th.accent.Render(truncate("sentinel add --name web-1 --host 203.0.113.10 --user root --key ~/.ssh/id_ed25519", inner)),
 		"",
 		"  "+th.dim.Render(truncate("Config: "+m.configPath, inner)),
 	)
@@ -190,7 +190,7 @@ func (m Model) renderHelp() string {
 	inner := m.width - 4
 
 	lines := []string{
-		"  " + th.accent.Bold(true).Render("NCSF SENTINEL") + " " + th.dim.Render("HELP"),
+		"  " + th.accent.Bold(true).Render("SENTINEL") + " " + th.dim.Render("HELP"),
 		"",
 		"  " + th.text.Bold(true).Render("NAVIGATION"),
 		"    " + th.muted.Render("↑/↓, j/k      move selection"),

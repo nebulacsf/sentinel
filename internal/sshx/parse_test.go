@@ -6,13 +6,13 @@ import (
 )
 
 const sampleOutput = `
-@@NCSF_UPTIME@@
+@@SENTINEL_UPTIME@@
 up 12 days, 4 hours
-@@NCSF_FREE@@
+@@SENTINEL_FREE@@
                total        used        free      shared  buff/cache   available
 Mem:            7982        2143        1200         123        4638        5837
 Swap:           2047           0        2047
-@@NCSF_DF@@
+@@SENTINEL_DF@@
 Filesystem      Size  Used Avail Use% Mounted on
 /dev/vda1        80G   18G   62G  23% /
 `
@@ -37,7 +37,7 @@ func TestParseOutput(t *testing.T) {
 }
 
 func TestParseOutputMissingSection(t *testing.T) {
-	if _, err := ParseOutput("@@NCSF_UPTIME@@\nup 1 hour\n"); err == nil {
+	if _, err := ParseOutput("@@SENTINEL_UPTIME@@\nup 1 hour\n"); err == nil {
 		t.Fatal("expected error")
 	}
 }

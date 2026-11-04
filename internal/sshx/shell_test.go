@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/config"
 )
 
 func TestShellArgs(t *testing.T) {

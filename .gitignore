@@ -1,5 +1,5 @@
 /bin/
-/ncsf-sentinel
+/sentinel
 *.test
 *.out
 *.prof

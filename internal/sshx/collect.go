@@ -17,7 +17,7 @@ import (
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/knownhosts"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/config"
 )
 
 const (
@@ -28,11 +28,11 @@ const (
 	stderrLimit = 16 * 1024
 
 	remoteCommand = `export LC_ALL=C
-printf '\n@@NCSF_UPTIME@@\n'
+printf '\n@@SENTINEL_UPTIME@@\n'
 uptime -p 2>/dev/null || cat /proc/uptime
-printf '\n@@NCSF_FREE@@\n'
+printf '\n@@SENTINEL_FREE@@\n'
 free -m
-printf '\n@@NCSF_DF@@\n'
+printf '\n@@SENTINEL_DF@@\n'
 df -P -h /`
 )
 

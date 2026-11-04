@@ -5,7 +5,7 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/sshx"
 )
 
 type theme struct {

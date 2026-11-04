@@ -12,10 +12,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
-	"github.com/nebulacsf/ncsf-sentinel/internal/monitor"
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
-	"github.com/nebulacsf/ncsf-sentinel/internal/version"
+	"github.com/nebulacsf/sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/monitor"
+	"github.com/nebulacsf/sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/version"
 )
 
 type screen int
@@ -231,7 +231,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 func (m Model) View() tea.View {
 	view := tea.NewView(m.render())
 	view.AltScreen = true
-	view.WindowTitle = "NCSF Sentinel"
+	view.WindowTitle = "Sentinel"
 	return view
 }
 
@@ -572,7 +572,7 @@ func (m Model) refreshStatus(th theme) string {
 
 func (m Model) headerLines(th theme) []string {
 	width := m.width - 4
-	title := th.accent.Bold(true).Render("NCSF SENTINEL") + " " + th.dim.Render("v"+version.Version)
+	title := th.accent.Bold(true).Render("SENTINEL") + " " + th.dim.Render("v"+version.Version)
 	clock := th.muted.Render(m.now.Format("15:04:05"))
 	line1 := "  " + spread(title, clock, width) + "  "
 	line2 := "  " + spread(m.summary(th), m.refreshStatus(th), width) + "  "

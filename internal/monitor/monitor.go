@@ -5,8 +5,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/sshx"
 )
 
 // DefaultParallelism bounds simultaneous SSH connections.

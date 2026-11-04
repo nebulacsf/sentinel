@@ -7,9 +7,9 @@ import (
 
 	"charm.land/lipgloss/v2"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
-	"github.com/nebulacsf/ncsf-sentinel/internal/monitor"
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/monitor"
+	"github.com/nebulacsf/sentinel/internal/sshx"
 )
 
 func sampleModel(t *testing.T) Model {
@@ -22,7 +22,7 @@ func sampleModel(t *testing.T) Model {
 	m := New(Options{
 		Servers:    servers,
 		Collector:  monitor.DemoCollector{},
-		ConfigPath: "/home/test/.ncsf-sentinel/servers.conf",
+		ConfigPath: "/home/test/.sentinel/servers.conf",
 		Interval:   30 * time.Second,
 		Timeout:    5 * time.Second,
 		Parallel:   4,
@@ -119,7 +119,7 @@ func TestTableAndDetailContent(t *testing.T) {
 	m.height = 30
 
 	out := m.render()
-	for _, want := range []string{"NCSF SENTINEL", "web-1", "ONLINE", "OFFLINE", "ERROR", "12d 4h", "2.1G/7.8G 27%", "3m stale"} {
+	for _, want := range []string{"SENTINEL", "web-1", "ONLINE", "OFFLINE", "ERROR", "12d 4h", "2.1G/7.8G 27%", "3m stale"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("table missing %q:\n%s", want, out)
 		}
@@ -198,7 +198,7 @@ func TestEmptyState(t *testing.T) {
 	m.width = 80
 	m.height = 24
 	out := m.render()
-	for _, want := range []string{"No servers configured", "ncsf-sentinel add", "/tmp/servers.conf"} {
+	for _, want := range []string{"No servers configured", "sentinel add", "/tmp/servers.conf"} {
 		if !strings.Contains(out, want) {
 			t.Errorf("empty state missing %q:\n%s", want, out)
 		}

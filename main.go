@@ -17,11 +17,11 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
-	"github.com/nebulacsf/ncsf-sentinel/internal/monitor"
-	"github.com/nebulacsf/ncsf-sentinel/internal/sshx"
-	"github.com/nebulacsf/ncsf-sentinel/internal/ui"
-	"github.com/nebulacsf/ncsf-sentinel/internal/version"
+	"github.com/nebulacsf/sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/monitor"
+	"github.com/nebulacsf/sentinel/internal/sshx"
+	"github.com/nebulacsf/sentinel/internal/ui"
+	"github.com/nebulacsf/sentinel/internal/version"
 )
 
 type options struct {
@@ -53,11 +53,11 @@ func main() {
 		var exit *exitError
 		if errors.As(err, &exit) {
 			if exit.err != nil {
-				fmt.Fprintln(os.Stderr, "ncsf-sentinel:", exit.err)
+				fmt.Fprintln(os.Stderr, "sentinel:", exit.err)
 			}
 			os.Exit(exit.code)
 		}
-		fmt.Fprintln(os.Stderr, "ncsf-sentinel:", err)
+		fmt.Fprintln(os.Stderr, "sentinel:", err)
 		os.Exit(1)
 	}
 }
@@ -65,7 +65,7 @@ func main() {
 func run(args []string) error {
 	opts := defaultOptions()
 
-	flags := flag.NewFlagSet("ncsf-sentinel", flag.ContinueOnError)
+	flags := flag.NewFlagSet("sentinel", flag.ContinueOnError)
 	flags.SetOutput(os.Stderr)
 	flags.Usage = func() { printUsage(os.Stderr) }
 	flags.StringVar(&opts.configPath, "config", opts.configPath, "config file")
@@ -87,7 +87,7 @@ func run(args []string) error {
 	rest := flags.Args()
 
 	if opts.showVersion {
-		fmt.Printf("ncsf-sentinel %s\n", version.Version)
+		fmt.Printf("sentinel %s\n", version.Version)
 		return nil
 	}
 	if len(rest) == 0 {
@@ -110,18 +110,18 @@ func run(args []string) error {
 	case "path":
 		return cmdPath(opts, rest[1:])
 	case "version":
-		fmt.Printf("ncsf-sentinel %s\n", version.Version)
+		fmt.Printf("sentinel %s\n", version.Version)
 		return nil
 	case "help":
 		printUsage(os.Stdout)
 		return nil
 	default:
-		return fmt.Errorf("unknown command %q (try 'ncsf-sentinel help')", rest[0])
+		return fmt.Errorf("unknown command %q (try 'sentinel help')", rest[0])
 	}
 }
 
 func defaultOptions() options {
-	path := os.Getenv("NCSF_SENTINEL_CONFIG")
+	path := os.Getenv("SENTINEL_CONFIG")
 	if path == "" {
 		if p, err := config.DefaultPath(); err == nil {
 			path = p
@@ -298,7 +298,7 @@ func cmdRemove(opts options, args []string) error {
 		return err
 	}
 	if fs.NArg() != 1 {
-		return errors.New("usage: ncsf-sentinel remove <name>")
+		return errors.New("usage: sentinel remove <name>")
 	}
 	path := resolvePath(*configPath)
 	cfg, err := config.Load(path)
@@ -541,11 +541,11 @@ func orDash(value string) string {
 }
 
 func printUsage(w io.Writer) {
-	fmt.Fprintf(w, `NCSF Sentinel - real-time SSH server dashboard
+	fmt.Fprintf(w, `Sentinel - real-time SSH server dashboard
 
 Usage:
-  ncsf-sentinel [flags]
-  ncsf-sentinel <command> [flags]
+  sentinel [flags]
+  sentinel <command> [flags]
 
 Commands:
   init        Create a config file
@@ -559,7 +559,7 @@ Commands:
   help        Show this help
 
 Global flags:
-  --config path        Config file (default ~/.ncsf-sentinel/servers.conf)
+  --config path        Config file (default ~/.sentinel/servers.conf)
   --interval duration  Refresh interval (default 30s)
   --timeout duration   Per-server timeout (default 5s)
   --parallel int       Maximum concurrent SSH connections (default 16)
@@ -570,12 +570,12 @@ Global flags:
   --version            Print the version
 
 Examples:
-  ncsf-sentinel init
-  ncsf-sentinel add --name web-1 --host 203.0.113.10 --user root --key ~/.ssh/id_ed25519
-  ncsf-sentinel add --name vici-1 --type vicidial --host 198.51.100.20 --user root
-  ncsf-sentinel list
-  ncsf-sentinel test
-  ncsf-sentinel --interval 15s
-  ncsf-sentinel --demo
+  sentinel init
+  sentinel add --name web-1 --host 203.0.113.10 --user root --key ~/.ssh/id_ed25519
+  sentinel add --name vici-1 --type vicidial --host 198.51.100.20 --user root
+  sentinel list
+  sentinel test
+  sentinel --interval 15s
+  sentinel --demo
 `)
 }

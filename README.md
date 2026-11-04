@@ -1,10 +1,10 @@
-# NCSF Sentinel
+# Sentinel
 
 A small, fast terminal dashboard for keeping an eye on multiple remote Linux
 servers over SSH.
 
 ```text
-NCSF SENTINEL  v0.1.0                                                    23:58:14
+SENTINEL  v0.1.0                                                    23:58:14
 ● 4 ONLINE   ● 1 OFFLINE   ● 1 ERROR                        refresh in 18s
 ────────────────────────────────────────────────────────────────────────────────
   NAME                 TYPE      STATUS    UPTIME       MEM            DISK      LAT
@@ -21,7 +21,7 @@ disk usage, connection information and the last error. From there, press `t`
 to open an interactive SSH terminal on that server. `esc` returns to the
 table without losing the selection.
 
-NCSF Sentinel is a single static Go binary. It talks to every server in
+Sentinel is a single static Go binary. It talks to every server in
 parallel, never blocks the UI on a slow host, and keeps the last known metrics
 visible (dimmed) when a server goes offline.
 
@@ -60,7 +60,7 @@ visible (dimmed) when a server goes offline.
 
 ```sh
 make build
-./bin/ncsf-sentinel --version
+./bin/sentinel --version
 ```
 
 Install into `$GOBIN` (or `$GOPATH/bin`):
@@ -73,28 +73,28 @@ For a static binary without make:
 
 ```sh
 CGO_ENABLED=0 go build -trimpath \
-  -ldflags "-s -w -X github.com/nebulacsf/ncsf-sentinel/internal/version.Version=0.1.0" \
-  -o ncsf-sentinel .
+  -ldflags "-s -w -X github.com/nebulacsf/sentinel/internal/version.Version=0.1.0" \
+  -o sentinel .
 ```
 
 ## Quick start
 
 ```sh
-# Create ~/.ncsf-sentinel/servers.conf
-ncsf-sentinel init
+# Create ~/.sentinel/servers.conf
+sentinel init
 
 # Add your hosts
-ncsf-sentinel add --name web-1 --host 203.0.113.10 --user root \
+sentinel add --name web-1 --host 203.0.113.10 --user root \
   --key ~/.ssh/id_ed25519
 
-ncsf-sentinel add --name vici-1 --type vicidial --host 198.51.100.20 \
+sentinel add --name vici-1 --type vicidial --host 198.51.100.20 \
   --user root --port 2222
 
 # Check connectivity and metrics once
-ncsf-sentinel test
+sentinel test
 
 # Open the dashboard
-ncsf-sentinel
+sentinel
 ```
 
 If a host has never been connected to before, its key will not be in
@@ -104,14 +104,14 @@ If a host has never been connected to before, its key will not be in
 ssh root@203.0.113.10
 ```
 
-Then NCSF Sentinel will trust the recorded key. The alternative is to opt out
+Then Sentinel will trust the recorded key. The alternative is to opt out
 of host key verification for that host with `insecure=1` (see below); this is
 not recommended outside of a lab.
 
 ## Configuration
 
-Default path: `~/.ncsf-sentinel/servers.conf`.
-Override it with `--config path` or the `NCSF_SENTINEL_CONFIG` environment
+Default path: `~/.sentinel/servers.conf`.
+Override it with `--config path` or the `SENTINEL_CONFIG` environment
 variable.
 
 The format is one server per line, fields separated by `|`:
@@ -145,23 +145,23 @@ canonical form when you use `add` or `remove`.
 ## Commands
 
 ```text
-ncsf-sentinel [flags]                 Open the dashboard
-ncsf-sentinel init [--force]          Create the config file
-ncsf-sentinel add ...                 Add a server
-ncsf-sentinel remove <name>           Remove a server
-ncsf-sentinel list                    List configured servers
-ncsf-sentinel test [name ...]         Check servers once; exit 3 on failure
-ncsf-sentinel edit                    Open the config in $VISUAL/$EDITOR
-ncsf-sentinel path                    Print the config path
-ncsf-sentinel version                 Print the version
-ncsf-sentinel help                    Show help
+sentinel [flags]                 Open the dashboard
+sentinel init [--force]          Create the config file
+sentinel add ...                 Add a server
+sentinel remove <name>           Remove a server
+sentinel list                    List configured servers
+sentinel test [name ...]         Check servers once; exit 3 on failure
+sentinel edit                    Open the config in $VISUAL/$EDITOR
+sentinel path                    Print the config path
+sentinel version                 Print the version
+sentinel help                    Show help
 ```
 
 ### Global flags
 
 | Flag                  | Default                              | Description                         |
 |-----------------------|--------------------------------------|-------------------------------------|
-| `--config path`       | `~/.ncsf-sentinel/servers.conf`      | Config file.                        |
+| `--config path`       | `~/.sentinel/servers.conf`      | Config file.                        |
 | `--interval duration` | `30s`                                | Background refresh interval.        |
 | `--timeout duration`  | `5s`                                 | Per-server timeout.                 |
 | `--parallel int`      | `16`                                 | Maximum concurrent SSH connections. |
@@ -188,7 +188,7 @@ ncsf-sentinel help                    Show help
 it usable from scripts and cron:
 
 ```sh
-ncsf-sentinel test web-1 vici-1
+sentinel test web-1 vici-1
 ```
 
 ## Keys
@@ -231,11 +231,11 @@ The remote command is:
 
 ```sh
 export LC_ALL=C
-printf '\n@@NCSF_UPTIME@@\n'
+printf '\n@@SENTINEL_UPTIME@@\n'
 uptime -p 2>/dev/null || cat /proc/uptime
-printf '\n@@NCSF_FREE@@\n'
+printf '\n@@SENTINEL_FREE@@\n'
 free -m
-printf '\n@@NCSF_DF@@\n'
+printf '\n@@SENTINEL_DF@@\n'
 df -P -h /
 ```
 
@@ -276,7 +276,7 @@ The UI can be explored without SSH access:
 ```sh
 go run . --demo
 # or, after building:
-make build && ./bin/ncsf-sentinel --demo
+make build && ./bin/sentinel --demo
 ```
 
 `--demo` uses deterministic simulated metrics and includes offline and failing

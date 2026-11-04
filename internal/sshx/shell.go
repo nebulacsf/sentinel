@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"strconv"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/config"
 )
 
 // ShellCommand builds an interactive OpenSSH client invocation for srv. The

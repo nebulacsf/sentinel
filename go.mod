@@ -1,4 +1,4 @@
-module github.com/nebulacsf/ncsf-sentinel
+module github.com/nebulacsf/sentinel
 
 go 1.27.3
 

@@ -4,7 +4,7 @@ package sshx
 import (
 	"time"
 
-	"github.com/nebulacsf/ncsf-sentinel/internal/config"
+	"github.com/nebulacsf/sentinel/internal/config"
 )
 
 // Status describes the outcome of one collection attempt.

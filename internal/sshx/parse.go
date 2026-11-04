@@ -21,15 +21,15 @@ var (
 
 // ParseOutput parses the marked sections produced by the remote command.
 func ParseOutput(out string) (Metrics, error) {
-	uptimeRaw, err := section(out, "@@NCSF_UPTIME@@", "@@NCSF_FREE@@")
+	uptimeRaw, err := section(out, "@@SENTINEL_UPTIME@@", "@@SENTINEL_FREE@@")
 	if err != nil {
 		return Metrics{}, err
 	}
-	freeRaw, err := section(out, "@@NCSF_FREE@@", "@@NCSF_DF@@")
+	freeRaw, err := section(out, "@@SENTINEL_FREE@@", "@@SENTINEL_DF@@")
 	if err != nil {
 		return Metrics{}, err
 	}
-	dfRaw, err := section(out, "@@NCSF_DF@@", "")
+	dfRaw, err := section(out, "@@SENTINEL_DF@@", "")
 	if err != nil {
 		return Metrics{}, err
 	}
