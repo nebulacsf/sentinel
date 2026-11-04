@@ -205,6 +205,8 @@ func runTUI(opts options) error {
 		Interval:   opts.interval,
 		Timeout:    opts.timeout,
 		Parallel:   opts.parallel,
+		Insecure:   opts.insecure,
+		Demo:       opts.demo,
 	})
 	program := tea.NewProgram(model)
 	if _, err := program.Run(); err != nil {

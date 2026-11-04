@@ -17,7 +17,8 @@ NCSF SENTINEL  v0.1.0                                                    23:58:1
 ```
 
 Press `enter` on a row to open a full-screen detail view with uptime, memory,
-disk usage, connection information and the last error. `esc` returns to the
+disk usage, connection information and the last error. From there, press `t`
+to open an interactive SSH terminal on that server. `esc` returns to the
 table without losing the selection.
 
 NCSF Sentinel is a single static Go binary. It talks to every server in
@@ -31,6 +32,8 @@ visible (dimmed) when a server goes offline.
 - Background refresh (30s by default) that never freezes rendering.
 - Uptime, RAM and root filesystem usage for each host.
 - Detail view and inline help.
+- Interactive SSH terminal from the detail view (`t`), powered by the system
+  OpenSSH client.
 - Responsive columns: low-priority columns disappear on narrow terminals
   instead of introducing horizontal scrolling.
 - Last known metrics are retained and marked stale when a host is offline.
@@ -48,7 +51,10 @@ visible (dimmed) when a server goes offline.
   - `free -m`
   - `df -P -h /`
 - SSH key authentication (a private key file and/or `ssh-agent`). Password
-  prompts are intentionally not supported in the dashboard.
+  prompts are intentionally not supported for metric collection. The
+  interactive terminal uses the system OpenSSH client, so it can prompt for
+  passwords or key passphrases.
+- The OpenSSH client (`ssh`) must be installed to use the interactive terminal.
 
 ## Install
 
@@ -192,12 +198,27 @@ ncsf-sentinel test web-1 vici-1
 | `↑` / `↓`, `j` / `k` | Move selection.                              |
 | `g` / `G`        | First / last server.                             |
 | `enter`          | Open server details.                             |
+| `t`              | Open an interactive SSH terminal (details view). |
 | `esc`            | Back to the table.                               |
 | `?`              | Toggle help.                                     |
 | `r`              | Refresh now.                                     |
 | `+` / `-`        | Change refresh interval by 5s (5s to 5m).        |
 | `e`              | Edit the config, then reload it on exit.         |
 | `q`, `ctrl+c`    | Quit.                                            |
+
+## Interactive terminal
+
+Press `t` while viewing a server's details to open a real SSH session on that
+host. The dashboard temporarily releases the terminal, runs the system `ssh`
+client with the server's host, port, user and identity file, and restores the
+dashboard when you exit the session. This means interactive programs such as
+`htop`, `vim` or `journalctl -f` work normally.
+
+Because it delegates to the system OpenSSH client, the terminal also inherits
+your `~/.ssh/config`, `ssh-agent` and interactive authentication prompts. When
+a server has `insecure=1` (or `--insecure-hostkey` is used), the same host key
+verification opt-out is passed to `ssh`. The terminal is disabled in `--demo`
+mode.
 
 ## How it works
 
@@ -235,10 +256,11 @@ always visible.
   `/etc/ssh/ssh_known_hosts`.
 - `insecure=1` (or `--insecure-hostkey`) disables that verification. Use it
   only for disposable lab machines.
-- Passphrase-protected private keys are not prompted for. Load them into
-  `ssh-agent` (`ssh-add ~/.ssh/id_ed25519`) or configure an unencrypted key.
+- Passphrase-protected private keys are not prompted for during metric
+  collection. Load them into `ssh-agent` (`ssh-add ~/.ssh/id_ed25519`) or
+  configure an unencrypted key. The interactive terminal can prompt directly.
 - The config file is written with `0600` permissions inside a `0700` directory.
-- The remote command is read-only and does not require `sudo`.
+- The metric command is read-only and does not require `sudo`.
 
 ## Development
 
@@ -259,12 +281,16 @@ make build && ./bin/ncsf-sentinel --demo
 
 `--demo` uses deterministic simulated metrics and includes offline and failing
 servers so stale-data rendering and the detail view can be checked easily. If
-no config file exists, it seeds a sample fleet automatically.
+no config file exists, it seeds a sample fleet automatically. The interactive
+SSH terminal is disabled in demo mode.
 
 ## Limitations
 
 - Linux metrics only.
-- No password authentication, jump hosts or `~/.ssh/config` parsing yet.
+- Metric collection does not use password authentication, jump hosts or
+  `~/.ssh/config` yet. The interactive terminal (`t`) delegates to system `ssh`
+  and supports them.
 - Each refresh uses a new SSH connection; it is designed for small fleets and
   low-frequency polling rather than high-frequency telemetry.
-- The dashboard is read-only: it never changes remote state.
+- Metric collection is read-only. The interactive terminal can run anything
+  the SSH user is allowed to run.

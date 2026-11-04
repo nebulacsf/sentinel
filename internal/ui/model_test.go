@@ -143,6 +143,55 @@ func TestTableAndDetailContent(t *testing.T) {
 	}
 }
 
+func TestTerminalAffordance(t *testing.T) {
+	m := sampleModel(t)
+	defer m.cancel()
+	m.width = 120
+	m.height = 40
+
+	m.screen = screenDetail
+	if out := m.render(); !strings.Contains(out, "t terminal") {
+		t.Errorf("detail footer missing terminal hint:\n%s", out)
+	}
+
+	m.screen = screenHelp
+	if out := m.render(); !strings.Contains(out, "SSH terminal") {
+		t.Errorf("help missing terminal entry:\n%s", out)
+	}
+}
+
+func TestTerminalDoneShowsErrorAndRefreshes(t *testing.T) {
+	m := sampleModel(t)
+	defer m.cancel()
+
+	updated, cmd := m.Update(terminalDoneMsg{server: "web-1", err: errString("exit status 255")})
+	got := updated.(Model)
+	if !strings.Contains(got.warning(), "terminal web-1: exit status 255") {
+		t.Fatalf("warning = %q, want terminal error", got.warning())
+	}
+	if cmd == nil {
+		t.Fatal("expected a refresh command after returning from the terminal")
+	}
+}
+
+func TestTerminalDisabledInDemo(t *testing.T) {
+	m := New(Options{
+		Servers: []config.Server{{Name: "a", Type: "web", Host: "h", User: "u", Port: 22}},
+		Demo:    true,
+	})
+	defer m.cancel()
+	m.screen = screenDetail
+
+	cmd := m.terminalCmd()
+	if cmd == nil {
+		t.Fatal("expected a command")
+	}
+	msg, ok := cmd().(terminalDoneMsg)
+	if !ok || msg.err == nil {
+		t.Fatalf("expected terminalDoneMsg with an error, got %#v", msg)
+	}
+}
+
 func TestEmptyState(t *testing.T) {
 	m := New(Options{ConfigPath: "/tmp/servers.conf"})
 	defer m.cancel()

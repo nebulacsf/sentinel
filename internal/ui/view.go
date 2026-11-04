@@ -177,7 +177,7 @@ func (m Model) renderDetail() string {
 		body = append(body, "    "+th.text.Render(truncate(line, inner-4)))
 	}
 
-	body = append(body, "", "  "+th.dim.Render(truncate("esc back · ↑↓ browse · r refresh · e edit · q quit", inner))+"  ")
+	body = append(body, "", "  "+th.dim.Render(truncate("esc back · ↑↓ browse · t terminal · r refresh · e edit · q quit", inner))+"  ")
 	return fitScreen(body, m.height)
 }
 
@@ -196,6 +196,7 @@ func (m Model) renderHelp() string {
 		"    " + th.muted.Render("↑/↓, j/k      move selection"),
 		"    " + th.muted.Render("g / G         first / last server"),
 		"    " + th.muted.Render("enter         open server details"),
+		"    " + th.muted.Render("t             open an interactive SSH terminal (details)"),
 		"    " + th.muted.Render("esc           back to the table"),
 		"    " + th.muted.Render("?             toggle this help"),
 		"",

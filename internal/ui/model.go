@@ -35,6 +35,8 @@ type Options struct {
 	Interval   time.Duration
 	Timeout    time.Duration
 	Parallel   int
+	Insecure   bool
+	Demo       bool
 }
 
 type serverState struct {
@@ -64,10 +66,13 @@ type Model struct {
 	configPath  string
 	loadErr     error
 	editorError error
+	terminalErr error
 
 	interval    time.Duration
 	timeout     time.Duration
 	parallel    int
+	insecure    bool
+	demo        bool
 	nextRefresh time.Time
 	refreshing  bool
 	gen         uint64
@@ -89,6 +94,11 @@ type refreshDoneMsg struct {
 
 type editorDoneMsg struct {
 	err error
+}
+
+type terminalDoneMsg struct {
+	server string
+	err    error
 }
 
 // New creates the dashboard model. The first collection starts in Init.
@@ -118,6 +128,8 @@ func New(opts Options) Model {
 		interval:   interval,
 		timeout:    timeout,
 		parallel:   parallel,
+		insecure:   opts.Insecure,
+		demo:       opts.Demo,
 		width:      100,
 		height:     30,
 		dark:       true,
@@ -198,6 +210,19 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case editorDoneMsg:
 		return m.afterEditor(msg.err)
+
+	case terminalDoneMsg:
+		m.terminalErr = nil
+		if msg.err != nil {
+			m.terminalErr = fmt.Errorf("terminal %s: %w", msg.server, msg.err)
+		}
+		if len(m.servers) == 0 || m.collector == nil {
+			return m, nil
+		}
+		m.gen++
+		m.refreshing = true
+		m.nextRefresh = time.Now().Add(m.interval)
+		return m, m.refreshCmd()
 	}
 	return m, nil
 }
@@ -266,6 +291,11 @@ func (m Model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		if m.screen == screenTable && len(m.servers) > 0 {
 			m.screen = screenDetail
+		}
+	case "t":
+		if m.screen == screenDetail {
+			m.terminalErr = nil
+			return m, m.terminalCmd()
 		}
 	}
 	return m, nil
@@ -367,6 +397,9 @@ func (m Model) state(name string) serverState {
 }
 
 func (m Model) warning() string {
+	if m.terminalErr != nil {
+		return m.terminalErr.Error()
+	}
 	if m.editorError != nil {
 		return m.editorError.Error()
 	}
@@ -419,6 +452,37 @@ func (m Model) afterEditor(err error) (tea.Model, tea.Cmd) {
 	m.refreshing = true
 	m.nextRefresh = time.Now().Add(m.interval)
 	return m, m.refreshCmd()
+}
+
+func (m Model) terminalCmd() tea.Cmd {
+	if m.demo {
+		return func() tea.Msg {
+			return terminalDoneMsg{err: errors.New("terminal is disabled in demo mode")}
+		}
+	}
+	if len(m.servers) == 0 {
+		return nil
+	}
+	index := m.cursor
+	if index < 0 {
+		index = 0
+	}
+	if index >= len(m.servers) {
+		index = len(m.servers) - 1
+	}
+	srv := m.servers[index]
+	cmd, err := sshx.ShellCommand(srv, sshx.Options{
+		Timeout:  m.timeout,
+		Insecure: m.insecure,
+	})
+	if err != nil {
+		return func() tea.Msg {
+			return terminalDoneMsg{server: srv.Name, err: err}
+		}
+	}
+	return tea.ExecProcess(cmd, func(err error) tea.Msg {
+		return terminalDoneMsg{server: srv.Name, err: err}
+	})
 }
 
 func (m Model) editCmd() tea.Cmd {
