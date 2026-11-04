@@ -572,7 +572,7 @@ func (m Model) refreshStatus(th theme) string {
 
 func (m Model) headerLines(th theme) []string {
 	width := m.width - 4
-	title := th.accent.Bold(true).Render("SENTINEL") + " " + th.dim.Render("v"+version.Version)
+	title := th.accent.Bold(true).Render("SENTINEL") + " " + th.dim.Render(version.Version)
 	clock := th.muted.Render(m.now.Format("15:04:05"))
 	line1 := "  " + spread(title, clock, width) + "  "
 	line2 := "  " + spread(m.summary(th), m.refreshStatus(th), width) + "  "
